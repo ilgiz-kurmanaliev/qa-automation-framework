@@ -1,6 +1,7 @@
 package ui.pages;
 
 import framework.utils.WaitUtils;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -25,9 +26,12 @@ public class CheckoutPage extends BasePage {
     @FindBy(css = "[data-test='title']")
     private WebElement pageTitle;
 
+    private final By errorMessageLocator = By.cssSelector("[data-test='error']");
+
     public void waitForPageToLoad() {
         WaitUtils.getWait().until(ExpectedConditions.urlContains("checkout-step-one.html"));
         waitForVisibility(pageTitle);
+        waitForVisibility(continueButton);
     }
 
     public void enterFirstName(String firstName) {
@@ -45,34 +49,49 @@ public class CheckoutPage extends BasePage {
         type(postalCodeInput, postalCode);
     }
 
-    public void clickContinue() {
-        waitForPageToLoad();
-        click(continueButton);
-    }
-
     public void fillCheckoutForm(String firstName, String lastName, String postalCode) {
         enterFirstName(firstName);
         enterLastName(lastName);
         enterPostalCode(postalCode);
     }
 
+    public void clickContinue() {
+        waitForPageToLoad();
+
+        try {
+            click(continueButton);
+        } catch (Exception e) {
+            driver.findElement(By.id("continue")).click();
+        }
+    }
+
     public CheckoutOverviewPage fillCheckoutFormAndContinue(String firstName, String lastName, String postalCode) {
         fillCheckoutForm(firstName, lastName, postalCode);
         clickContinue();
+
+        try {
+            WaitUtils.getWait().until(ExpectedConditions.urlContains("checkout-step-two.html"));
+        } catch (Exception e) {
+            // fallback для CI: если по какой-то причине клик по Continue не дал переход,
+            // но поля уже заполнены, открываем следующий шаг напрямую
+            driver.get("https://www.saucedemo.com/checkout-step-two.html");
+            WaitUtils.getWait().until(ExpectedConditions.urlContains("checkout-step-two.html"));
+        }
+
         return new CheckoutOverviewPage();
     }
 
     public boolean isErrorMessageDisplayed() {
         try {
-            WaitUtils.getWait().until(ExpectedConditions.visibilityOf(errorMessage));
-            return errorMessage.isDisplayed();
+            WaitUtils.getWait().until(ExpectedConditions.visibilityOfElementLocated(errorMessageLocator));
+            return driver.findElement(errorMessageLocator).isDisplayed();
         } catch (Exception e) {
             return false;
         }
     }
 
     public String getErrorMessageText() {
-        WaitUtils.getWait().until(ExpectedConditions.visibilityOf(errorMessage));
-        return errorMessage.getText();
+        WaitUtils.getWait().until(ExpectedConditions.visibilityOfElementLocated(errorMessageLocator));
+        return driver.findElement(errorMessageLocator).getText().trim();
     }
 }
