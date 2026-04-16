@@ -32,6 +32,15 @@ public class InventoryPage extends BasePage {
         waitForVisibility(pageTitle);
     }
 
+    public boolean isInventoryListDisplayed() {
+        try {
+            waitForPageToLoad();
+            return inventoryList.isDisplayed();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     public HeaderComponent header() {
         return headerComponent;
     }
@@ -47,7 +56,6 @@ public class InventoryPage extends BasePage {
 
         button.click();
 
-        // 🔥 ВАЖНО: ищем кнопку заново после клика
         WaitUtils.getWait().until(driver -> {
             WebElement updatedButton = driver.findElement(firstButtonLocator);
             return updatedButton.getText().contains("Remove");
