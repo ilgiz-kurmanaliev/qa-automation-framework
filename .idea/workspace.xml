@@ -5,64 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="60bfab3c-a0b5-47ea-aeff-c8adf2694e85" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.github/workflows/ci.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/qa/Main.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/framework/config/ConfigManager.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/framework/constants/FrameworkConstants.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/framework/driver/DriverFactory.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/framework/driver/DriverManager.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/framework/utils/RandomDataUtils.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/framework/utils/ScreenshotUtils.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/framework/utils/WaitUtils.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/api/assertions/ApiAssertions.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/api/client/BaseApiClient.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/api/models/User.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/api/services/AuthService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/api/services/UserService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/api/tests/BaseApiTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/api/tests/LoginApiTests.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/api/tests/UserApiTests.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/framework/listeners/TestListener.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/framework/retry/RetryAnalyzer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/framework/retry/RetryTransformer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/testdata/DataProviders.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/ui/assertions/CartAssertions.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/ui/assertions/CheckoutAssertions.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/ui/assertions/InventoryAssertions.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/ui/assertions/LoginAssertions.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/ui/components/HeaderComponent.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/ui/components/MenuComponent.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/ui/components/ProductCardComponent.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/ui/pages/BasePage.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/ui/pages/CartPage.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/ui/pages/CheckoutCompletePage.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/ui/pages/CheckoutOverviewPage.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/ui/pages/CheckoutPage.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/ui/pages/InventoryPage.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/ui/pages/LoginPage.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/ui/tests/AdvancedLoginTests.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/ui/tests/BaseTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/ui/tests/CartAdvancedTests.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/ui/tests/CartTests.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/ui/tests/CheckoutTests.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/ui/tests/InventoryTests.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/ui/tests/LoginTests.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/ui/tests/LogoutTests.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/ui/tests/SmokeTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/ui/tests/SortingTests.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/resources/configs/qa.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/resources/configs/stage.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/testng-api.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/testng-regression.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/testng-smoke.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/testng-ui.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/framework/driver/DriverFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/framework/driver/DriverFactory.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -91,18 +35,18 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;TestNG.C:/Users/Zenbook OLED/enterprise-ecommerce-automation/testng-api.xml.executor&quot;: &quot;Run&quot;,
-    &quot;TestNG.C:/Users/Zenbook OLED/enterprise-ecommerce-automation/testng-ui.xml.executor&quot;: &quot;Run&quot;,
-    &quot;TestNG.CartTests.executor&quot;: &quot;Run&quot;,
-    &quot;TestNG.SmokeTest.executor&quot;: &quot;Run&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;onboarding.tips.debug.path&quot;: &quot;C:/Users/Zenbook OLED/enterprise-ecommerce-automation/src/main/java/com/qa/Main.java&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "TestNG.C:/Users/Zenbook OLED/enterprise-ecommerce-automation/testng-api.xml.executor": "Run",
+    "TestNG.C:/Users/Zenbook OLED/enterprise-ecommerce-automation/testng-ui.xml.executor": "Run",
+    "TestNG.CartTests.executor": "Run",
+    "TestNG.SmokeTest.executor": "Run",
+    "git-widget-placeholder": "main",
+    "kotlin-language-version-configured": "true",
+    "onboarding.tips.debug.path": "C:/Users/Zenbook OLED/enterprise-ecommerce-automation/src/main/java/com/qa/Main.java"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
       <recent name="framework.listeners" />
