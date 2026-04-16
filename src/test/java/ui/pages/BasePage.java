@@ -1,7 +1,8 @@
 package ui.pages;
 
-import framework.driver.DriverManager;
+import framework.driver.DriverFactory;
 import framework.utils.WaitUtils;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
@@ -12,7 +13,7 @@ public class BasePage {
     protected WebDriver driver;
 
     public BasePage() {
-        this.driver = DriverManager.getDriver();
+        this.driver = DriverFactory.getDriver();
         PageFactory.initElements(driver, this);
     }
 
@@ -24,13 +25,26 @@ public class BasePage {
         WaitUtils.getWait().until(ExpectedConditions.elementToBeClickable(element));
     }
 
+    protected void scrollIntoView(WebElement element) {
+        ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].scrollIntoView({block: 'center'});", element
+        );
+    }
+
     protected void click(WebElement element) {
         waitForClickability(element);
-        element.click();
+        scrollIntoView(element);
+
+        try {
+            element.click();
+        } catch (Exception e) {
+            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
+        }
     }
 
     protected void type(WebElement element, String text) {
         waitForVisibility(element);
+        scrollIntoView(element);
         element.clear();
         element.sendKeys(text);
     }

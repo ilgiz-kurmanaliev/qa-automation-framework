@@ -25,15 +25,27 @@ public class InventoryPage extends BasePage {
 
     private final HeaderComponent headerComponent = new HeaderComponent();
 
+    public void waitForPageToLoad() {
+        waitForVisibility(inventoryList);
+        waitForVisibility(pageTitle);
+    }
+
     public boolean isInventoryListDisplayed() {
-        return isDisplayed(inventoryList);
+        try {
+            waitForPageToLoad();
+            return inventoryList.isDisplayed();
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public int getInventoryItemsCount() {
+        waitForPageToLoad();
         return inventoryItems.size();
     }
 
     public String getPageTitle() {
+        waitForPageToLoad();
         return getText(pageTitle);
     }
 
@@ -42,32 +54,43 @@ public class InventoryPage extends BasePage {
     }
 
     public void addFirstProductToCart() {
+        waitForPageToLoad();
+
         if (!inventoryItems.isEmpty()) {
-            inventoryItems.get(0).findElement(By.tagName("button")).click();
+            WebElement firstButton = inventoryItems.get(0).findElement(By.tagName("button"));
+            click(firstButton);
         }
     }
 
     public void removeFirstProductFromCart() {
+        waitForPageToLoad();
+
         if (!inventoryItems.isEmpty()) {
-            inventoryItems.get(0).findElement(By.tagName("button")).click();
+            WebElement firstButton = inventoryItems.get(0).findElement(By.tagName("button"));
+            click(firstButton);
         }
     }
 
     public String getFirstProductButtonText() {
+        waitForPageToLoad();
+
         if (!inventoryItems.isEmpty()) {
-            return inventoryItems.get(0)
-                    .findElement(By.tagName("button"))
-                    .getText();
+            WebElement firstButton = inventoryItems.get(0).findElement(By.tagName("button"));
+            return firstButton.getText();
         }
+
         return "";
     }
 
     public void selectSortOption(String visibleText) {
+        waitForPageToLoad();
         Select select = new Select(sortDropdown);
         select.selectByVisibleText(visibleText);
     }
 
     public List<String> getProductNames() {
+        waitForPageToLoad();
+
         List<String> productNames = new ArrayList<>();
 
         for (WebElement item : inventoryItems) {
@@ -79,6 +102,8 @@ public class InventoryPage extends BasePage {
     }
 
     public List<Double> getProductPrices() {
+        waitForPageToLoad();
+
         List<Double> productPrices = new ArrayList<>();
 
         for (WebElement item : inventoryItems) {

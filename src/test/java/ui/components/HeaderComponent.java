@@ -25,12 +25,16 @@ public class HeaderComponent extends BasePage {
 
     public int getCartBadgeCount() {
         try {
+            waitForVisibility(cartIcon);
+
             if (cartBadge.isDisplayed()) {
-                return Integer.parseInt(getText(cartBadge));
+                String badgeText = cartBadge.getText().trim();
+                return Integer.parseInt(badgeText);
             }
         } catch (Exception e) {
             return 0;
         }
+
         return 0;
     }
 
