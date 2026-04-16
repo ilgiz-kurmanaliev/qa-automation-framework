@@ -9,15 +9,14 @@ public class BaseTest {
 
     protected WebDriver driver;
 
-    @BeforeMethod
+    @BeforeMethod(alwaysRun = true)
     public void setUp() {
         DriverFactory.initDriver();
         driver = DriverFactory.getDriver();
-
         driver.get("https://www.saucedemo.com/");
     }
 
-    @AfterMethod
+    @AfterMethod(alwaysRun = true)
     public void tearDown() {
         DriverFactory.quitDriver();
     }
