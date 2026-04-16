@@ -5,7 +5,7 @@ import org.openqa.selenium.WebDriver;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 
-public class BaseTest {
+public abstract class BaseTest {
 
     protected WebDriver driver;
 
@@ -13,6 +13,11 @@ public class BaseTest {
     public void setUp() {
         DriverFactory.initDriver();
         driver = DriverFactory.getDriver();
+
+        if (driver == null) {
+            throw new RuntimeException("Driver is NOT initialized!");
+        }
+
         driver.get("https://www.saucedemo.com/");
     }
 
