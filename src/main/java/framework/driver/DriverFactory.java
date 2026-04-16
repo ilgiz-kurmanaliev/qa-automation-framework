@@ -19,7 +19,6 @@ public class DriverFactory {
         options.addArguments("--disable-infobars");
         options.addArguments("--disable-extensions");
 
-        // 🔥 ЭТО ДЛЯ CI (GitHub Actions)
         options.addArguments("--headless=new");
         options.addArguments("--no-sandbox");
         options.addArguments("--disable-dev-shm-usage");
