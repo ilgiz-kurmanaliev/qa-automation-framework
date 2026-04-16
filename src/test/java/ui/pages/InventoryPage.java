@@ -25,6 +25,10 @@ public class InventoryPage extends BasePage {
     @FindBy(className = "product_sort_container")
     private WebElement sortDropdown;
 
+    // Берём один конкретный товар для стабильности во всех тестах
+    private final By backpackAddButton = By.id("add-to-cart-sauce-labs-backpack");
+    private final By backpackRemoveButton = By.id("remove-sauce-labs-backpack");
+
     private final HeaderComponent headerComponent = new HeaderComponent();
 
     public void waitForPageToLoad() {
@@ -41,56 +45,6 @@ public class InventoryPage extends BasePage {
         }
     }
 
-    public HeaderComponent header() {
-        return headerComponent;
-    }
-
-    public void addFirstProductToCart() {
-        waitForPageToLoad();
-
-        By firstButtonLocator = By.xpath("(//div[@class='inventory_item']//button)[1]");
-
-        WebElement button = WaitUtils.getWait().until(
-                ExpectedConditions.elementToBeClickable(firstButtonLocator)
-        );
-
-        button.click();
-
-        WaitUtils.getWait().until(driver -> {
-            WebElement updatedButton = driver.findElement(firstButtonLocator);
-            return updatedButton.getText().contains("Remove");
-        });
-    }
-
-    public void removeFirstProductFromCart() {
-        waitForPageToLoad();
-
-        By firstButtonLocator = By.xpath("(//div[@class='inventory_item']//button)[1]");
-
-        WebElement button = WaitUtils.getWait().until(
-                ExpectedConditions.elementToBeClickable(firstButtonLocator)
-        );
-
-        button.click();
-
-        WaitUtils.getWait().until(driver -> {
-            WebElement updatedButton = driver.findElement(firstButtonLocator);
-            return updatedButton.getText().contains("Add to cart");
-        });
-    }
-
-    public String getFirstProductButtonText() {
-        waitForPageToLoad();
-
-        By firstButtonLocator = By.xpath("(//div[@class='inventory_item']//button)[1]");
-
-        WebElement button = WaitUtils.getWait().until(
-                ExpectedConditions.visibilityOfElementLocated(firstButtonLocator)
-        );
-
-        return button.getText().trim();
-    }
-
     public int getInventoryItemsCount() {
         waitForPageToLoad();
         return inventoryItems.size();
@@ -99,6 +53,54 @@ public class InventoryPage extends BasePage {
     public String getPageTitle() {
         waitForPageToLoad();
         return getText(pageTitle);
+    }
+
+    public HeaderComponent header() {
+        return headerComponent;
+    }
+
+    public void addFirstProductToCart() {
+        waitForPageToLoad();
+
+        WebElement addButton = WaitUtils.getWait().until(
+                ExpectedConditions.elementToBeClickable(backpackAddButton)
+        );
+
+        click(addButton);
+
+        WaitUtils.getWait().until(
+                ExpectedConditions.visibilityOfElementLocated(backpackRemoveButton)
+        );
+    }
+
+    public void removeFirstProductFromCart() {
+        waitForPageToLoad();
+
+        WebElement removeButton = WaitUtils.getWait().until(
+                ExpectedConditions.elementToBeClickable(backpackRemoveButton)
+        );
+
+        click(removeButton);
+
+        WaitUtils.getWait().until(
+                ExpectedConditions.visibilityOfElementLocated(backpackAddButton)
+        );
+    }
+
+    public String getFirstProductButtonText() {
+        waitForPageToLoad();
+
+        List<WebElement> removeButtons = driver.findElements(backpackRemoveButton);
+        if (!removeButtons.isEmpty() && removeButtons.get(0).isDisplayed()) {
+            return removeButtons.get(0).getText().trim();
+        }
+
+        List<WebElement> addButtons = driver.findElements(backpackAddButton);
+        if (!addButtons.isEmpty() && addButtons.get(0).isDisplayed()) {
+            return addButtons.get(0).getText().trim();
+        }
+
+        return "";
     }
 
     public void selectSortOption(String visibleText) {
