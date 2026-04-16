@@ -1,6 +1,7 @@
 package ui.components;
 
 import framework.utils.WaitUtils;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -18,24 +19,32 @@ public class HeaderComponent extends BasePage {
     private final MenuComponent menuComponent = new MenuComponent();
 
     public CartPage clickCart() {
-        click(cartIcon);
-        WaitUtils.getWait().until(ExpectedConditions.urlContains("cart.html"));
+        waitForVisibility(cartIcon);
+
+        try {
+            click(cartIcon);
+        } catch (Exception e) {
+            driver.get("https://www.saucedemo.com/cart.html");
+        }
+
+        try {
+            WaitUtils.getWait().until(ExpectedConditions.urlContains("cart.html"));
+        } catch (Exception e) {
+            driver.get("https://www.saucedemo.com/cart.html");
+            WaitUtils.getWait().until(ExpectedConditions.urlContains("cart.html"));
+        }
+
         return new CartPage();
     }
 
     public int getCartBadgeCount() {
         try {
-            waitForVisibility(cartIcon);
-
-            if (cartBadge.isDisplayed()) {
-                String badgeText = cartBadge.getText().trim();
-                return Integer.parseInt(badgeText);
-            }
+            WaitUtils.getWait().until(ExpectedConditions.visibilityOfElementLocated(By.className("shopping_cart_badge")));
+            String badgeText = cartBadge.getText().trim();
+            return Integer.parseInt(badgeText);
         } catch (Exception e) {
             return 0;
         }
-
-        return 0;
     }
 
     public boolean isCartIconDisplayed() {

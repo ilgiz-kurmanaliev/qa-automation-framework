@@ -1,8 +1,10 @@
 package ui.pages;
 
+import framework.utils.WaitUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import ui.components.HeaderComponent;
 
@@ -59,6 +61,8 @@ public class InventoryPage extends BasePage {
         if (!inventoryItems.isEmpty()) {
             WebElement firstButton = inventoryItems.get(0).findElement(By.tagName("button"));
             click(firstButton);
+
+            WaitUtils.getWait().until(ExpectedConditions.textToBePresentInElement(firstButton, "Remove"));
         }
     }
 
@@ -68,6 +72,8 @@ public class InventoryPage extends BasePage {
         if (!inventoryItems.isEmpty()) {
             WebElement firstButton = inventoryItems.get(0).findElement(By.tagName("button"));
             click(firstButton);
+
+            WaitUtils.getWait().until(ExpectedConditions.textToBePresentInElement(firstButton, "Add to cart"));
         }
     }
 
@@ -76,7 +82,7 @@ public class InventoryPage extends BasePage {
 
         if (!inventoryItems.isEmpty()) {
             WebElement firstButton = inventoryItems.get(0).findElement(By.tagName("button"));
-            return firstButton.getText();
+            return firstButton.getText().trim();
         }
 
         return "";
