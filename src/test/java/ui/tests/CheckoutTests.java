@@ -8,9 +8,14 @@ import io.qameta.allure.Owner;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
 import io.qameta.allure.Story;
+import org.testng.Assert;
 import org.testng.annotations.Test;
-import ui.assertions.CheckoutAssertions;
-import ui.pages.*;
+import ui.pages.CartPage;
+import ui.pages.CheckoutCompletePage;
+import ui.pages.CheckoutOverviewPage;
+import ui.pages.CheckoutPage;
+import ui.pages.InventoryPage;
+import ui.pages.LoginPage;
 
 @Epic("UI Tests")
 @Feature("Checkout")
@@ -32,20 +37,31 @@ public class CheckoutTests extends BaseTest {
         CartPage cartPage = inventoryPage.header().clickCart();
         CheckoutPage checkoutPage = cartPage.clickCheckout();
 
-        checkoutPage.fillCheckoutFormAndContinue(
+        CheckoutOverviewPage overviewPage = checkoutPage.fillCheckoutFormAndContinue(
                 RandomDataUtils.getFirstName(),
                 RandomDataUtils.getLastName(),
                 "12345"
         );
 
-        CheckoutOverviewPage overviewPage = new CheckoutOverviewPage();
-        CheckoutAssertions.assertCheckoutOverviewOpened(overviewPage);
+        Assert.assertTrue(
+                overviewPage.isOverviewPageDisplayed(),
+                "Checkout overview page was not opened"
+        );
 
         overviewPage.clickFinish();
 
         CheckoutCompletePage completePage = new CheckoutCompletePage();
-        CheckoutAssertions.assertCheckoutComplete(completePage);
-        CheckoutAssertions.assertCheckoutCompleteHeader(completePage, "Thank you for your order!");
+
+        Assert.assertTrue(
+                completePage.isCheckoutCompletePageDisplayed(),
+                "Checkout complete page is not displayed"
+        );
+
+        Assert.assertEquals(
+                completePage.getCompleteHeaderText(),
+                "Thank you for your order!",
+                "Checkout completion header text is incorrect"
+        );
     }
 
     @Test(description = "Verify checkout shows validation error when fields are empty")
@@ -66,6 +82,14 @@ public class CheckoutTests extends BaseTest {
 
         checkoutPage.clickContinue();
 
-        CheckoutAssertions.assertCheckoutErrorDisplayed(checkoutPage);
+        Assert.assertTrue(
+                checkoutPage.isErrorMessageDisplayed(),
+                "Checkout error message is not displayed"
+        );
+
+        Assert.assertTrue(
+                checkoutPage.getErrorMessageText().contains("Error"),
+                "Unexpected checkout error message text"
+        );
     }
 }

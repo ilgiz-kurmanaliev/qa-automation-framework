@@ -27,4 +27,13 @@ public class CheckoutOverviewPage extends BasePage {
         waitForPageToLoad();
         click(finishButton);
     }
+
+    public boolean isOverviewPageDisplayed() {
+        try {
+            waitForPageToLoad();
+            return getCurrentUrl().contains("checkout-step-two.html");
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }

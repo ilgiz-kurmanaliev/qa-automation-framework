@@ -1,7 +1,9 @@
 package ui.pages;
 
+import framework.utils.WaitUtils;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public class CheckoutPage extends BasePage {
 
@@ -20,19 +22,31 @@ public class CheckoutPage extends BasePage {
     @FindBy(css = "[data-test='error']")
     private WebElement errorMessage;
 
+    @FindBy(css = "[data-test='title']")
+    private WebElement pageTitle;
+
+    public void waitForPageToLoad() {
+        WaitUtils.getWait().until(ExpectedConditions.urlContains("checkout-step-one.html"));
+        waitForVisibility(pageTitle);
+    }
+
     public void enterFirstName(String firstName) {
+        waitForPageToLoad();
         type(firstNameInput, firstName);
     }
 
     public void enterLastName(String lastName) {
+        waitForPageToLoad();
         type(lastNameInput, lastName);
     }
 
     public void enterPostalCode(String postalCode) {
+        waitForPageToLoad();
         type(postalCodeInput, postalCode);
     }
 
     public void clickContinue() {
+        waitForPageToLoad();
         click(continueButton);
     }
 
@@ -42,20 +56,23 @@ public class CheckoutPage extends BasePage {
         enterPostalCode(postalCode);
     }
 
-    public void fillCheckoutFormAndContinue(String firstName, String lastName, String postalCode) {
+    public CheckoutOverviewPage fillCheckoutFormAndContinue(String firstName, String lastName, String postalCode) {
         fillCheckoutForm(firstName, lastName, postalCode);
         clickContinue();
+        return new CheckoutOverviewPage();
     }
 
     public boolean isErrorMessageDisplayed() {
         try {
-            return isDisplayed(errorMessage);
+            WaitUtils.getWait().until(ExpectedConditions.visibilityOf(errorMessage));
+            return errorMessage.isDisplayed();
         } catch (Exception e) {
             return false;
         }
     }
 
     public String getErrorMessageText() {
-        return getText(errorMessage);
+        WaitUtils.getWait().until(ExpectedConditions.visibilityOf(errorMessage));
+        return errorMessage.getText();
     }
 }
