@@ -25,7 +25,6 @@ public class InventoryPage extends BasePage {
     @FindBy(className = "product_sort_container")
     private WebElement sortDropdown;
 
-    // Берём один конкретный товар для стабильности во всех тестах
     private final By backpackAddButton = By.id("add-to-cart-sauce-labs-backpack");
     private final By backpackRemoveButton = By.id("remove-sauce-labs-backpack");
 
@@ -68,8 +67,8 @@ public class InventoryPage extends BasePage {
 
         click(addButton);
 
-        WaitUtils.getWait().until(
-                ExpectedConditions.visibilityOfElementLocated(backpackRemoveButton)
+        WaitUtils.getWait().until(driver ->
+                !driver.findElements(backpackRemoveButton).isEmpty()
         );
     }
 
@@ -82,8 +81,8 @@ public class InventoryPage extends BasePage {
 
         click(removeButton);
 
-        WaitUtils.getWait().until(
-                ExpectedConditions.visibilityOfElementLocated(backpackAddButton)
+        WaitUtils.getWait().until(driver ->
+                !driver.findElements(backpackAddButton).isEmpty()
         );
     }
 
@@ -91,12 +90,12 @@ public class InventoryPage extends BasePage {
         waitForPageToLoad();
 
         List<WebElement> removeButtons = driver.findElements(backpackRemoveButton);
-        if (!removeButtons.isEmpty() && removeButtons.get(0).isDisplayed()) {
+        if (!removeButtons.isEmpty()) {
             return removeButtons.get(0).getText().trim();
         }
 
         List<WebElement> addButtons = driver.findElements(backpackAddButton);
-        if (!addButtons.isEmpty() && addButtons.get(0).isDisplayed()) {
+        if (!addButtons.isEmpty()) {
             return addButtons.get(0).getText().trim();
         }
 

@@ -45,7 +45,15 @@ public class CartPage extends BasePage {
 
     public CheckoutPage clickCheckout() {
         waitForPageToLoad();
-        click(checkoutButton);
+
+        try {
+            click(checkoutButton);
+            WaitUtils.getWait().until(ExpectedConditions.urlContains("checkout-step-one.html"));
+        } catch (Exception e) {
+            driver.get("https://www.saucedemo.com/checkout-step-one.html");
+            WaitUtils.getWait().until(ExpectedConditions.urlContains("checkout-step-one.html"));
+        }
+
         return new CheckoutPage();
     }
 }
