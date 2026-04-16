@@ -32,13 +32,55 @@ public class InventoryPage extends BasePage {
         waitForVisibility(pageTitle);
     }
 
-    public boolean isInventoryListDisplayed() {
-        try {
-            waitForPageToLoad();
-            return inventoryList.isDisplayed();
-        } catch (Exception e) {
-            return false;
-        }
+    public HeaderComponent header() {
+        return headerComponent;
+    }
+
+    public void addFirstProductToCart() {
+        waitForPageToLoad();
+
+        By firstButtonLocator = By.xpath("(//div[@class='inventory_item']//button)[1]");
+
+        WebElement button = WaitUtils.getWait().until(
+                ExpectedConditions.elementToBeClickable(firstButtonLocator)
+        );
+
+        button.click();
+
+        // 🔥 ВАЖНО: ищем кнопку заново после клика
+        WaitUtils.getWait().until(driver -> {
+            WebElement updatedButton = driver.findElement(firstButtonLocator);
+            return updatedButton.getText().contains("Remove");
+        });
+    }
+
+    public void removeFirstProductFromCart() {
+        waitForPageToLoad();
+
+        By firstButtonLocator = By.xpath("(//div[@class='inventory_item']//button)[1]");
+
+        WebElement button = WaitUtils.getWait().until(
+                ExpectedConditions.elementToBeClickable(firstButtonLocator)
+        );
+
+        button.click();
+
+        WaitUtils.getWait().until(driver -> {
+            WebElement updatedButton = driver.findElement(firstButtonLocator);
+            return updatedButton.getText().contains("Add to cart");
+        });
+    }
+
+    public String getFirstProductButtonText() {
+        waitForPageToLoad();
+
+        By firstButtonLocator = By.xpath("(//div[@class='inventory_item']//button)[1]");
+
+        WebElement button = WaitUtils.getWait().until(
+                ExpectedConditions.visibilityOfElementLocated(firstButtonLocator)
+        );
+
+        return button.getText().trim();
     }
 
     public int getInventoryItemsCount() {
@@ -51,73 +93,37 @@ public class InventoryPage extends BasePage {
         return getText(pageTitle);
     }
 
-    public HeaderComponent header() {
-        return headerComponent;
-    }
-
-    public void addFirstProductToCart() {
-        waitForPageToLoad();
-
-        if (!inventoryItems.isEmpty()) {
-            WebElement firstButton = inventoryItems.get(0).findElement(By.tagName("button"));
-            click(firstButton);
-
-            WaitUtils.getWait().until(ExpectedConditions.textToBePresentInElement(firstButton, "Remove"));
-        }
-    }
-
-    public void removeFirstProductFromCart() {
-        waitForPageToLoad();
-
-        if (!inventoryItems.isEmpty()) {
-            WebElement firstButton = inventoryItems.get(0).findElement(By.tagName("button"));
-            click(firstButton);
-
-            WaitUtils.getWait().until(ExpectedConditions.textToBePresentInElement(firstButton, "Add to cart"));
-        }
-    }
-
-    public String getFirstProductButtonText() {
-        waitForPageToLoad();
-
-        if (!inventoryItems.isEmpty()) {
-            WebElement firstButton = inventoryItems.get(0).findElement(By.tagName("button"));
-            return firstButton.getText().trim();
-        }
-
-        return "";
-    }
-
     public void selectSortOption(String visibleText) {
         waitForPageToLoad();
-        Select select = new Select(sortDropdown);
-        select.selectByVisibleText(visibleText);
+        new Select(sortDropdown).selectByVisibleText(visibleText);
     }
 
     public List<String> getProductNames() {
         waitForPageToLoad();
 
-        List<String> productNames = new ArrayList<>();
+        List<String> names = new ArrayList<>();
 
         for (WebElement item : inventoryItems) {
-            String name = item.findElement(By.className("inventory_item_name")).getText();
-            productNames.add(name);
+            names.add(item.findElement(By.className("inventory_item_name")).getText());
         }
 
-        return productNames;
+        return names;
     }
 
     public List<Double> getProductPrices() {
         waitForPageToLoad();
 
-        List<Double> productPrices = new ArrayList<>();
+        List<Double> prices = new ArrayList<>();
 
         for (WebElement item : inventoryItems) {
-            String priceText = item.findElement(By.className("inventory_item_price")).getText();
-            priceText = priceText.replace("$", "").trim();
-            productPrices.add(Double.parseDouble(priceText));
+            String price = item.findElement(By.className("inventory_item_price"))
+                    .getText()
+                    .replace("$", "")
+                    .trim();
+
+            prices.add(Double.parseDouble(price));
         }
 
-        return productPrices;
+        return prices;
     }
 }
