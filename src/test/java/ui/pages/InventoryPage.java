@@ -267,7 +267,7 @@ public class InventoryPage extends BasePage {
     }
 
     private void refreshInventoryPage() {
-        driver.navigate().refresh();
+        driver.get("https://www.saucedemo.com/inventory.html");
         waitForPageToLoad();
     }
 
