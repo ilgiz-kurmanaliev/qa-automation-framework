@@ -1,9 +1,9 @@
 package ui.pages;
 
-import framework.config.ConfigManager;
-import io.qameta.allure.Step;
+import framework.utils.WaitUtils;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public class LoginPage extends BasePage {
 
@@ -19,40 +19,42 @@ public class LoginPage extends BasePage {
     @FindBy(css = "[data-test='error']")
     private WebElement errorMessage;
 
-    @Step("Open login page")
     public void open() {
-        driver.get(ConfigManager.get("base.ui.url"));
+        driver.get("https://www.saucedemo.com/");
     }
 
-    @Step("Enter username: {username}")
     public void enterUsername(String username) {
         type(usernameInput, username);
     }
 
-    @Step("Enter password")
     public void enterPassword(String password) {
         type(passwordInput, password);
     }
 
-    @Step("Click login button")
     public void clickLoginButton() {
         click(loginButton);
     }
 
-    @Step("Login with username: {username}")
     public void login(String username, String password) {
         enterUsername(username);
         enterPassword(password);
         clickLoginButton();
     }
 
-    @Step("Get error message text")
-    public String getErrorMessageText() {
-        return getText(errorMessage);
+    public void waitForInventoryPageToLoad() {
+        WaitUtils.getWait().until(ExpectedConditions.urlContains("inventory.html"));
     }
 
-    @Step("Check error message displayed")
     public boolean isErrorMessageDisplayed() {
-        return isDisplayed(errorMessage);
+        try {
+            waitForVisibility(errorMessage);
+            return errorMessage.isDisplayed();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public String getErrorMessageText() {
+        return getText(errorMessage);
     }
 }

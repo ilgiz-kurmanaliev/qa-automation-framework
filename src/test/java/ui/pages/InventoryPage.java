@@ -2,9 +2,7 @@ package ui.pages;
 
 import framework.utils.WaitUtils;
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.StaleElementReferenceException;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
@@ -12,6 +10,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import ui.components.HeaderComponent;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -172,32 +171,48 @@ public class InventoryPage extends BasePage {
     }
 
     private void clickElementRobustly(By locator) {
-        WebElement element = WaitUtils.getWait().until(
-                ExpectedConditions.presenceOfElementLocated(locator)
-        );
+        RuntimeException lastException = null;
 
-        ((JavascriptExecutor) driver).executeScript(
-                "arguments[0].scrollIntoView({block:'center'});",
-                element
-        );
+        for (int attempt = 1; attempt <= 3; attempt++) {
+            try {
+                WebElement element = WaitUtils.getWait().until(
+                        ExpectedConditions.presenceOfElementLocated(locator)
+                );
 
-        try {
-            WaitUtils.getWait().until(ExpectedConditions.elementToBeClickable(locator));
-            element = driver.findElement(locator);
-            element.click();
-            return;
-        } catch (Exception ignored) {
+                scrollIntoView(element);
+
+                try {
+                    WaitUtils.getWait().until(ExpectedConditions.elementToBeClickable(locator));
+                    driver.findElement(locator).click();
+                    return;
+                } catch (Exception ignored) {
+                }
+
+                try {
+                    element = driver.findElement(locator);
+                    new Actions(driver)
+                            .moveToElement(element)
+                            .pause(Duration.ofMillis(200))
+                            .click()
+                            .perform();
+                    return;
+                } catch (Exception ignored) {
+                }
+
+                element = driver.findElement(locator);
+                scrollIntoView(element);
+                ((org.openqa.selenium.JavascriptExecutor) driver)
+                        .executeScript("arguments[0].click();", element);
+                return;
+
+            } catch (Exception e) {
+                lastException = new RuntimeException(
+                        "Failed to click element " + locator + " on attempt " + attempt, e
+                );
+            }
         }
 
-        try {
-            element = driver.findElement(locator);
-            new Actions(driver).moveToElement(element).pause(java.time.Duration.ofMillis(200)).click().perform();
-            return;
-        } catch (Exception ignored) {
-        }
-
-        element = driver.findElement(locator);
-        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
+        throw lastException;
     }
 
     private boolean waitUntilBackpackAdded(int seconds) {
@@ -229,7 +244,6 @@ public class InventoryPage extends BasePage {
     private boolean isBackpackAdded() {
         try {
             boolean removeVisible = !driver.findElements(backpackRemoveButton).isEmpty();
-
             List<WebElement> badges = driver.findElements(cartBadge);
             boolean badgeVisible = !badges.isEmpty();
             boolean badgeIsOne = badgeVisible && "1".equals(badges.get(0).getText().trim());
