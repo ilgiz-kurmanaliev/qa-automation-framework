@@ -1,8 +1,8 @@
 package ui.pages;
 
 import framework.utils.WaitUtils;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public class CheckoutCompletePage extends BasePage {
@@ -16,16 +16,7 @@ public class CheckoutCompletePage extends BasePage {
     public void waitForPageToLoad() {
         WaitUtils.getWait().until(ExpectedConditions.urlContains("checkout-complete.html"));
         waitForVisibility(pageTitle);
-    }
-
-    public String getPageTitle() {
-        waitForPageToLoad();
-        return getText(pageTitle);
-    }
-
-    public String getCompleteHeaderText() {
-        waitForPageToLoad();
-        return getText(completeHeader);
+        waitForVisibility(completeHeader);
     }
 
     public boolean isCheckoutCompletePageDisplayed() {
@@ -35,5 +26,10 @@ public class CheckoutCompletePage extends BasePage {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public String getCompleteHeaderText() {
+        waitForPageToLoad();
+        return getText(completeHeader);
     }
 }

@@ -2,6 +2,7 @@ package ui.pages;
 
 import framework.utils.WaitUtils;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -62,15 +63,11 @@ public class InventoryPage extends BasePage {
 
     public void addFirstProductToCart() {
         waitForPageToLoad();
-
-        By addButtonLocator = backpackAddButton;
-        By removeButtonLocator = backpackRemoveButton;
-
-        clickWithRetry(addButtonLocator);
+        clickWithRetry(backpackAddButton);
 
         WaitUtils.getWait().until(driver -> {
             try {
-                boolean removeVisible = !driver.findElements(removeButtonLocator).isEmpty();
+                boolean removeVisible = !driver.findElements(backpackRemoveButton).isEmpty();
                 List<WebElement> badges = driver.findElements(cartBadge);
 
                 return removeVisible
@@ -85,16 +82,18 @@ public class InventoryPage extends BasePage {
     public void removeFirstProductFromCart() {
         waitForPageToLoad();
 
-        By removeButtonLocator = backpackRemoveButton;
-        By addButtonLocator = backpackAddButton;
+        if (driver.findElements(backpackRemoveButton).isEmpty()) {
+            addFirstProductToCart();
+        }
 
-        clickWithRetry(removeButtonLocator);
+        clickWithRetry(backpackRemoveButton);
 
         WaitUtils.getWait().until(driver -> {
             try {
-                boolean addVisible = !driver.findElements(addButtonLocator).isEmpty();
-                boolean badgeGone = driver.findElements(cartBadge).isEmpty();
-                return addVisible && badgeGone;
+                boolean addVisible = !driver.findElements(backpackAddButton).isEmpty();
+                boolean removeGone = driver.findElements(backpackRemoveButton).isEmpty();
+
+                return addVisible && removeGone;
             } catch (StaleElementReferenceException e) {
                 return false;
             }
@@ -157,12 +156,24 @@ public class InventoryPage extends BasePage {
         for (int attempt = 1; attempt <= 3; attempt++) {
             try {
                 WebElement element = WaitUtils.getWait().until(
-                        ExpectedConditions.elementToBeClickable(locator)
+                        ExpectedConditions.presenceOfElementLocated(locator)
                 );
-                click(element);
+
+                ((JavascriptExecutor) driver).executeScript(
+                        "arguments[0].scrollIntoView({block:'center'});",
+                        element
+                );
+
+                try {
+                    WaitUtils.getWait().until(ExpectedConditions.elementToBeClickable(locator));
+                    element.click();
+                } catch (Exception e) {
+                    ((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
+                }
+
                 return;
             } catch (Exception e) {
-                lastException = new RuntimeException("Failed to click element on attempt " + attempt, e);
+                lastException = new RuntimeException("Failed to click element: " + locator + " on attempt " + attempt, e);
             }
         }
 
