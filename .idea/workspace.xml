@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="60bfab3c-a0b5-47ea-aeff-c8adf2694e85" name="Changes" comment="" />
+    <list default="true" id="60bfab3c-a0b5-47ea-aeff-c8adf2694e85" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/src/test/java/ui/pages/InventoryPage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/ui/pages/InventoryPage.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -32,18 +34,18 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "TestNG.C:/Users/Zenbook OLED/enterprise-ecommerce-automation/testng-api.xml.executor": "Run",
-    "TestNG.C:/Users/Zenbook OLED/enterprise-ecommerce-automation/testng-ui.xml.executor": "Run",
-    "TestNG.CartTests.executor": "Run",
-    "TestNG.SmokeTest.executor": "Run",
-    "git-widget-placeholder": "main",
-    "kotlin-language-version-configured": "true",
-    "onboarding.tips.debug.path": "C:/Users/Zenbook OLED/enterprise-ecommerce-automation/src/main/java/com/qa/Main.java"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;TestNG.C:/Users/Zenbook OLED/enterprise-ecommerce-automation/testng-api.xml.executor&quot;: &quot;Run&quot;,
+    &quot;TestNG.C:/Users/Zenbook OLED/enterprise-ecommerce-automation/testng-ui.xml.executor&quot;: &quot;Run&quot;,
+    &quot;TestNG.CartTests.executor&quot;: &quot;Run&quot;,
+    &quot;TestNG.SmokeTest.executor&quot;: &quot;Run&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;onboarding.tips.debug.path&quot;: &quot;C:/Users/Zenbook OLED/enterprise-ecommerce-automation/src/main/java/com/qa/Main.java&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
       <recent name="framework.listeners" />
