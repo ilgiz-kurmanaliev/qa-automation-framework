@@ -4,7 +4,9 @@ import framework.utils.WaitUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
@@ -63,41 +65,60 @@ public class InventoryPage extends BasePage {
 
     public void addFirstProductToCart() {
         waitForPageToLoad();
-        clickWithRetry(backpackAddButton);
 
-        WaitUtils.getWait().until(driver -> {
+        if (isBackpackAdded()) {
+            return;
+        }
+
+        RuntimeException lastException = null;
+
+        for (int attempt = 1; attempt <= 3; attempt++) {
             try {
-                boolean removeVisible = !driver.findElements(backpackRemoveButton).isEmpty();
-                List<WebElement> badges = driver.findElements(cartBadge);
+                clickElementRobustly(backpackAddButton);
 
-                return removeVisible
-                        && !badges.isEmpty()
-                        && "1".equals(badges.get(0).getText().trim());
-            } catch (StaleElementReferenceException e) {
-                return false;
+                if (waitUntilBackpackAdded(12)) {
+                    return;
+                }
+
+                refreshInventoryPage();
+            } catch (Exception e) {
+                lastException = new RuntimeException(
+                        "Failed to add backpack on attempt " + attempt, e
+                );
+                refreshInventoryPage();
             }
-        });
+        }
+
+        throw new RuntimeException("Failed to add backpack product to cart after 3 attempts", lastException);
     }
 
     public void removeFirstProductFromCart() {
         waitForPageToLoad();
 
-        if (driver.findElements(backpackRemoveButton).isEmpty()) {
+        if (!isBackpackAdded()) {
             addFirstProductToCart();
         }
 
-        clickWithRetry(backpackRemoveButton);
+        RuntimeException lastException = null;
 
-        WaitUtils.getWait().until(driver -> {
+        for (int attempt = 1; attempt <= 3; attempt++) {
             try {
-                boolean addVisible = !driver.findElements(backpackAddButton).isEmpty();
-                boolean removeGone = driver.findElements(backpackRemoveButton).isEmpty();
+                clickElementRobustly(backpackRemoveButton);
 
-                return addVisible && removeGone;
-            } catch (StaleElementReferenceException e) {
-                return false;
+                if (waitUntilBackpackRemoved(12)) {
+                    return;
+                }
+
+                refreshInventoryPage();
+            } catch (Exception e) {
+                lastException = new RuntimeException(
+                        "Failed to remove backpack on attempt " + attempt, e
+                );
+                refreshInventoryPage();
             }
-        });
+        }
+
+        throw new RuntimeException("Failed to remove backpack product from cart after 3 attempts", lastException);
     }
 
     public String getFirstProductButtonText() {
@@ -150,33 +171,98 @@ public class InventoryPage extends BasePage {
         return prices;
     }
 
-    private void clickWithRetry(By locator) {
-        RuntimeException lastException = null;
+    private void clickElementRobustly(By locator) {
+        WebElement element = WaitUtils.getWait().until(
+                ExpectedConditions.presenceOfElementLocated(locator)
+        );
 
-        for (int attempt = 1; attempt <= 3; attempt++) {
-            try {
-                WebElement element = WaitUtils.getWait().until(
-                        ExpectedConditions.presenceOfElementLocated(locator)
-                );
+        ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].scrollIntoView({block:'center'});",
+                element
+        );
 
-                ((JavascriptExecutor) driver).executeScript(
-                        "arguments[0].scrollIntoView({block:'center'});",
-                        element
-                );
-
-                try {
-                    WaitUtils.getWait().until(ExpectedConditions.elementToBeClickable(locator));
-                    element.click();
-                } catch (Exception e) {
-                    ((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
-                }
-
-                return;
-            } catch (Exception e) {
-                lastException = new RuntimeException("Failed to click element: " + locator + " on attempt " + attempt, e);
-            }
+        try {
+            WaitUtils.getWait().until(ExpectedConditions.elementToBeClickable(locator));
+            element = driver.findElement(locator);
+            element.click();
+            return;
+        } catch (Exception ignored) {
         }
 
-        throw lastException;
+        try {
+            element = driver.findElement(locator);
+            new Actions(driver).moveToElement(element).pause(java.time.Duration.ofMillis(200)).click().perform();
+            return;
+        } catch (Exception ignored) {
+        }
+
+        element = driver.findElement(locator);
+        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
+    }
+
+    private boolean waitUntilBackpackAdded(int seconds) {
+        long endTime = System.currentTimeMillis() + (seconds * 1000L);
+
+        while (System.currentTimeMillis() < endTime) {
+            if (isBackpackAdded()) {
+                return true;
+            }
+            sleep(300);
+        }
+
+        return false;
+    }
+
+    private boolean waitUntilBackpackRemoved(int seconds) {
+        long endTime = System.currentTimeMillis() + (seconds * 1000L);
+
+        while (System.currentTimeMillis() < endTime) {
+            if (isBackpackRemoved()) {
+                return true;
+            }
+            sleep(300);
+        }
+
+        return false;
+    }
+
+    private boolean isBackpackAdded() {
+        try {
+            boolean removeVisible = !driver.findElements(backpackRemoveButton).isEmpty();
+
+            List<WebElement> badges = driver.findElements(cartBadge);
+            boolean badgeVisible = !badges.isEmpty();
+            boolean badgeIsOne = badgeVisible && "1".equals(badges.get(0).getText().trim());
+
+            return removeVisible && badgeIsOne;
+        } catch (StaleElementReferenceException e) {
+            return false;
+        }
+    }
+
+    private boolean isBackpackRemoved() {
+        try {
+            boolean addVisible = !driver.findElements(backpackAddButton).isEmpty();
+            boolean removeGone = driver.findElements(backpackRemoveButton).isEmpty();
+            boolean badgeGone = driver.findElements(cartBadge).isEmpty();
+
+            return addVisible && removeGone && badgeGone;
+        } catch (StaleElementReferenceException e) {
+            return false;
+        }
+    }
+
+    private void refreshInventoryPage() {
+        driver.navigate().refresh();
+        waitForPageToLoad();
+    }
+
+    private void sleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Sleep interrupted", e);
+        }
     }
 }
