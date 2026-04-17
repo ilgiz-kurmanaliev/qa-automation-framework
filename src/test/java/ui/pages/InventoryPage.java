@@ -2,15 +2,13 @@ package ui.pages;
 
 import framework.utils.WaitUtils;
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import ui.components.HeaderComponent;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,78 +63,42 @@ public class InventoryPage extends BasePage {
     public void addFirstProductToCart() {
         waitForPageToLoad();
 
-        boolean added = false;
+        By addButtonLocator = backpackAddButton;
+        By removeButtonLocator = backpackRemoveButton;
 
-        for (int attempt = 1; attempt <= 3; attempt++) {
+        clickWithRetry(addButtonLocator);
+
+        WaitUtils.getWait().until(driver -> {
             try {
-                WebElement addButton = WaitUtils.getWait().until(
-                        ExpectedConditions.presenceOfElementLocated(backpackAddButton)
-                );
+                boolean removeVisible = !driver.findElements(removeButtonLocator).isEmpty();
+                List<WebElement> badges = driver.findElements(cartBadge);
 
-                ((JavascriptExecutor) driver).executeScript(
-                        "arguments[0].scrollIntoView({block:'center'});", addButton
-                );
-
-                try {
-                    WaitUtils.getWait().until(ExpectedConditions.elementToBeClickable(backpackAddButton));
-                    addButton.click();
-                } catch (Exception e) {
-                    ((JavascriptExecutor) driver).executeScript("arguments[0].click();", addButton);
-                }
-
-                waitUntilProductAdded();
-                added = true;
-                break;
-
-            } catch (Exception ignored) {
-                // следующая попытка
+                return removeVisible
+                        && !badges.isEmpty()
+                        && "1".equals(badges.get(0).getText().trim());
+            } catch (StaleElementReferenceException e) {
+                return false;
             }
-        }
-
-        if (!added) {
-            throw new RuntimeException("Failed to add backpack product to cart after 3 attempts");
-        }
+        });
     }
 
     public void removeFirstProductFromCart() {
         waitForPageToLoad();
 
-        // если товара ещё нет в корзине — сначала добавим
-        if (driver.findElements(backpackRemoveButton).isEmpty()) {
-            addFirstProductToCart();
-        }
+        By removeButtonLocator = backpackRemoveButton;
+        By addButtonLocator = backpackAddButton;
 
-        boolean removed = false;
+        clickWithRetry(removeButtonLocator);
 
-        for (int attempt = 1; attempt <= 3; attempt++) {
+        WaitUtils.getWait().until(driver -> {
             try {
-                WebElement removeButton = WaitUtils.getWait().until(
-                        ExpectedConditions.presenceOfElementLocated(backpackRemoveButton)
-                );
-
-                ((JavascriptExecutor) driver).executeScript(
-                        "arguments[0].scrollIntoView({block:'center'});", removeButton
-                );
-
-                try {
-                    WaitUtils.getWait().until(ExpectedConditions.elementToBeClickable(backpackRemoveButton));
-                    removeButton.click();
-                } catch (Exception e) {
-                    ((JavascriptExecutor) driver).executeScript("arguments[0].click();", removeButton);
-                }
-
-                waitUntilProductRemoved();
-                removed = true;
-                break;
-
-            } catch (Exception ignored) {
-                // следующая попытка
+                boolean addVisible = !driver.findElements(addButtonLocator).isEmpty();
+                boolean badgeGone = driver.findElements(cartBadge).isEmpty();
+                return addVisible && badgeGone;
+            } catch (StaleElementReferenceException e) {
+                return false;
             }
-        }
-
-        if (!removed) {
-            throw new RuntimeException("Failed to remove backpack product from cart after 3 attempts");
-        }
+        });
     }
 
     public String getFirstProductButtonText() {
@@ -189,49 +151,21 @@ public class InventoryPage extends BasePage {
         return prices;
     }
 
-    private void waitUntilProductAdded() {
-        long endTime = System.currentTimeMillis() + Duration.ofSeconds(10).toMillis();
+    private void clickWithRetry(By locator) {
+        RuntimeException lastException = null;
 
-        while (System.currentTimeMillis() < endTime) {
-            boolean removeVisible = !driver.findElements(backpackRemoveButton).isEmpty();
-            List<WebElement> badges = driver.findElements(cartBadge);
-
-            if (removeVisible && !badges.isEmpty()) {
-                String badgeText = badges.get(0).getText().trim();
-                if ("1".equals(badgeText)) {
-                    return;
-                }
-            }
-
-            sleep(300);
-        }
-
-        throw new TimeoutException("Product was not added to cart in time");
-    }
-
-    private void waitUntilProductRemoved() {
-        long endTime = System.currentTimeMillis() + Duration.ofSeconds(10).toMillis();
-
-        while (System.currentTimeMillis() < endTime) {
-            boolean addVisible = !driver.findElements(backpackAddButton).isEmpty();
-            boolean badgeGone = driver.findElements(cartBadge).isEmpty();
-
-            if (addVisible && badgeGone) {
+        for (int attempt = 1; attempt <= 3; attempt++) {
+            try {
+                WebElement element = WaitUtils.getWait().until(
+                        ExpectedConditions.elementToBeClickable(locator)
+                );
+                click(element);
                 return;
+            } catch (Exception e) {
+                lastException = new RuntimeException("Failed to click element on attempt " + attempt, e);
             }
-
-            sleep(300);
         }
 
-        throw new TimeoutException("Product was not removed from cart in time");
-    }
-
-    private void sleep(long millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException("Thread sleep interrupted", e);
-        }
+        throw lastException;
     }
 }

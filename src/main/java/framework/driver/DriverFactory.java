@@ -16,12 +16,13 @@ public class DriverFactory {
         options.addArguments("--disable-notifications");
         options.addArguments("--disable-infobars");
         options.addArguments("--disable-extensions");
-
-        options.addArguments("--headless=new");
         options.addArguments("--no-sandbox");
         options.addArguments("--disable-dev-shm-usage");
         options.addArguments("--window-size=1920,1080");
 
+        // ВАЖНО:
+        // Не включаем headless здесь.
+        // В GitHub Actions UI будет запускаться в обычном Chrome через Xvfb.
         WebDriver driver = new ChromeDriver(options);
 
         DriverManager.setDriver(driver);
