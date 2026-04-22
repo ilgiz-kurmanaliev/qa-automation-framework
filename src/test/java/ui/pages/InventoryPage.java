@@ -4,6 +4,7 @@ import framework.utils.WaitUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
@@ -70,15 +71,22 @@ public class InventoryPage extends BasePage {
             return;
         }
 
-        clickElementRobustly(backpackAddButton);
+        RuntimeException lastException = null;
 
-        WaitUtils.getWait().until(driver -> {
+        for (int attempt = 1; attempt <= 3; attempt++) {
             try {
-                return isBackpackAdded();
+                clickElementRobustly(backpackAddButton);
+                waitUntilBackpackAdded();
+                return;
             } catch (Exception e) {
-                return false;
+                lastException = new RuntimeException(
+                        "Failed to add backpack on attempt " + attempt, e
+                );
+                reopenInventoryPage();
             }
-        });
+        }
+
+        throw new RuntimeException("Failed to add backpack product to cart after 3 attempts", lastException);
     }
 
     public void removeFirstProductFromCart() {
@@ -88,28 +96,33 @@ public class InventoryPage extends BasePage {
             addFirstProductToCart();
         }
 
-        clickElementRobustly(backpackRemoveButton);
+        RuntimeException lastException = null;
 
-        WaitUtils.getWait().until(driver -> {
+        for (int attempt = 1; attempt <= 3; attempt++) {
             try {
-                return isBackpackRemoved();
+                clickElementRobustly(backpackRemoveButton);
+                waitUntilBackpackRemoved();
+                return;
             } catch (Exception e) {
-                return false;
+                lastException = new RuntimeException(
+                        "Failed to remove backpack on attempt " + attempt, e
+                );
+                reopenInventoryPage();
             }
-        });
+        }
+
+        throw new RuntimeException("Failed to remove backpack product from cart after 3 attempts", lastException);
     }
 
     public String getFirstProductButtonText() {
         waitForPageToLoad();
 
-        List<WebElement> removeButtons = driver.findElements(backpackRemoveButton);
-        if (!removeButtons.isEmpty() && removeButtons.get(0).isDisplayed()) {
-            return removeButtons.get(0).getText().trim();
+        if (!driver.findElements(backpackRemoveButton).isEmpty()) {
+            return driver.findElement(backpackRemoveButton).getText().trim();
         }
 
-        List<WebElement> addButtons = driver.findElements(backpackAddButton);
-        if (!addButtons.isEmpty() && addButtons.get(0).isDisplayed()) {
-            return addButtons.get(0).getText().trim();
+        if (!driver.findElements(backpackAddButton).isEmpty()) {
+            return driver.findElement(backpackAddButton).getText().trim();
         }
 
         return "";
@@ -124,7 +137,6 @@ public class InventoryPage extends BasePage {
         waitForPageToLoad();
 
         List<String> names = new ArrayList<>();
-
         for (WebElement item : inventoryItems) {
             names.add(item.findElement(By.className("inventory_item_name")).getText());
         }
@@ -136,13 +148,11 @@ public class InventoryPage extends BasePage {
         waitForPageToLoad();
 
         List<Double> prices = new ArrayList<>();
-
         for (WebElement item : inventoryItems) {
             String price = item.findElement(By.className("inventory_item_price"))
                     .getText()
                     .replace("$", "")
                     .trim();
-
             prices.add(Double.parseDouble(price));
         }
 
@@ -187,12 +197,38 @@ public class InventoryPage extends BasePage {
 
             } catch (Exception e) {
                 lastException = new RuntimeException(
-                        "Failed to click element: " + locator + " on attempt " + attempt, e
+                        "Failed to click element " + locator + " on attempt " + attempt, e
                 );
             }
         }
 
         throw lastException;
+    }
+
+    private void waitUntilBackpackAdded() {
+        long endTime = System.currentTimeMillis() + 12000;
+
+        while (System.currentTimeMillis() < endTime) {
+            if (isBackpackAdded()) {
+                return;
+            }
+            sleep(300);
+        }
+
+        throw new TimeoutException("Backpack was not added to cart in time");
+    }
+
+    private void waitUntilBackpackRemoved() {
+        long endTime = System.currentTimeMillis() + 12000;
+
+        while (System.currentTimeMillis() < endTime) {
+            if (isBackpackRemoved()) {
+                return;
+            }
+            sleep(300);
+        }
+
+        throw new TimeoutException("Backpack was not removed from cart in time");
     }
 
     private boolean isBackpackAdded() {
@@ -217,6 +253,20 @@ public class InventoryPage extends BasePage {
             return addVisible && removeGone && badgeGone;
         } catch (StaleElementReferenceException e) {
             return false;
+        }
+    }
+
+    private void reopenInventoryPage() {
+        driver.get("https://www.saucedemo.com/inventory.html");
+        waitForPageToLoad();
+    }
+
+    private void sleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Sleep interrupted", e);
         }
     }
 }
