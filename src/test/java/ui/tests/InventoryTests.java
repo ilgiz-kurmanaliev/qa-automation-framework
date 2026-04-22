@@ -16,31 +16,31 @@ import ui.pages.LoginPage;
 @Feature("Inventory")
 public class InventoryTests extends BaseTest {
 
-    @Test(description = "Verify products page is opened after login")
-    @Story("Open Inventory")
+    @Test(description = "Verify inventory page loads successfully")
+    @Story("Inventory Page Load")
     @Severity(SeverityLevel.CRITICAL)
     @Owner("Ilgiz")
     public void inventoryPageLoadedTest() {
         LoginPage loginPage = new LoginPage();
         InventoryPage inventoryPage = new InventoryPage();
 
-        loginPage.open();
         loginPage.login("standard_user", "secret_sauce");
+        loginPage.waitForInventoryPageToLoad();
 
         InventoryAssertions.assertInventoryPageOpened(inventoryPage);
         InventoryAssertions.assertProductsLoaded(inventoryPage);
     }
 
     @Test(description = "Verify user can add first product to cart")
-    @Story("Add Product to Cart")
+    @Story("Add Product To Cart")
     @Severity(SeverityLevel.CRITICAL)
     @Owner("Ilgiz")
     public void addFirstProductToCartTest() {
         LoginPage loginPage = new LoginPage();
         InventoryPage inventoryPage = new InventoryPage();
 
-        loginPage.open();
         loginPage.login("standard_user", "secret_sauce");
+        loginPage.waitForInventoryPageToLoad();
 
         inventoryPage.addFirstProductToCart();
 

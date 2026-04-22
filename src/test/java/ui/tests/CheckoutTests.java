@@ -29,8 +29,8 @@ public class CheckoutTests extends BaseTest {
         LoginPage loginPage = new LoginPage();
         InventoryPage inventoryPage = new InventoryPage();
 
-        loginPage.open();
         loginPage.login("standard_user", "secret_sauce");
+        loginPage.waitForInventoryPageToLoad();
 
         inventoryPage.addFirstProductToCart();
 
@@ -72,8 +72,8 @@ public class CheckoutTests extends BaseTest {
         LoginPage loginPage = new LoginPage();
         InventoryPage inventoryPage = new InventoryPage();
 
-        loginPage.open();
         loginPage.login("standard_user", "secret_sauce");
+        loginPage.waitForInventoryPageToLoad();
 
         inventoryPage.addFirstProductToCart();
 

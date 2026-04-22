@@ -28,8 +28,8 @@ public class SortingTests extends BaseTest {
         LoginPage loginPage = new LoginPage();
         InventoryPage inventoryPage = new InventoryPage();
 
-        loginPage.open();
         loginPage.login("standard_user", "secret_sauce");
+        loginPage.waitForInventoryPageToLoad();
 
         inventoryPage.selectSortOption("Name (A to Z)");
 
@@ -48,8 +48,8 @@ public class SortingTests extends BaseTest {
         LoginPage loginPage = new LoginPage();
         InventoryPage inventoryPage = new InventoryPage();
 
-        loginPage.open();
         loginPage.login("standard_user", "secret_sauce");
+        loginPage.waitForInventoryPageToLoad();
 
         inventoryPage.selectSortOption("Price (low to high)");
 

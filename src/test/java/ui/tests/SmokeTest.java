@@ -1,20 +1,35 @@
 package ui.tests;
 
-import framework.config.ConfigManager;
-import framework.driver.DriverManager;
+import io.qameta.allure.*;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Owner;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
+import io.qameta.allure.Story;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import ui.pages.InventoryPage;
+import ui.pages.LoginPage;
 
+@Epic("UI Tests")
+@Feature("Smoke")
 public class SmokeTest extends BaseTest {
 
-    @Test
+    @Test(description = "Verify smoke login flow")
+    @Story("Smoke Login")
+    @Severity(SeverityLevel.CRITICAL)
+    @Owner("Ilgiz")
     public void frameworkSmokeTest() {
-        DriverManager.getDriver().get(ConfigManager.get("base.ui.url"));
-        String currentUrl = DriverManager.getDriver().getCurrentUrl();
+        LoginPage loginPage = new LoginPage();
+        InventoryPage inventoryPage = new InventoryPage();
+
+        loginPage.login("standard_user", "secret_sauce");
+        loginPage.waitForInventoryPageToLoad();
 
         Assert.assertTrue(
-                currentUrl.contains("saucedemo"),
-                "Framework smoke test failed: incorrect URL"
+                inventoryPage.isInventoryListDisplayed(),
+                "Smoke test failed: inventory page is not displayed"
         );
     }
 }

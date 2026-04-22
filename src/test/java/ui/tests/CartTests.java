@@ -7,8 +7,8 @@ import io.qameta.allure.Owner;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
 import io.qameta.allure.Story;
+import org.testng.Assert;
 import org.testng.annotations.Test;
-import ui.assertions.CartAssertions;
 import ui.pages.CartPage;
 import ui.pages.InventoryPage;
 import ui.pages.LoginPage;
@@ -17,22 +17,29 @@ import ui.pages.LoginPage;
 @Feature("Cart")
 public class CartTests extends BaseTest {
 
-    @Test(description = "Verify added product appears in cart")
-    @Story("Open Cart with Product")
+    @Test(description = "Verify user can open cart with added product")
+    @Story("Open Cart")
     @Severity(SeverityLevel.CRITICAL)
     @Owner("Ilgiz")
     public void openCartWithAddedProductTest() {
         LoginPage loginPage = new LoginPage();
         InventoryPage inventoryPage = new InventoryPage();
 
-        loginPage.open();
         loginPage.login("standard_user", "secret_sauce");
+        loginPage.waitForInventoryPageToLoad();
 
         inventoryPage.addFirstProductToCart();
 
         CartPage cartPage = inventoryPage.header().clickCart();
 
-        CartAssertions.assertCartPageOpened(cartPage);
-        CartAssertions.assertCartItemsCount(cartPage, 1);
+        Assert.assertTrue(
+                cartPage.isCartPageDisplayed(),
+                "Cart page is not displayed"
+        );
+        Assert.assertEquals(
+                cartPage.getCartItemsCount(),
+                1,
+                "Cart item count is incorrect"
+        );
     }
 }

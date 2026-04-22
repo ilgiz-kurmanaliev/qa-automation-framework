@@ -25,8 +25,8 @@ public class LogoutTests extends BaseTest {
         LoginPage loginPage = new LoginPage();
         InventoryPage inventoryPage = new InventoryPage();
 
-        loginPage.open();
         loginPage.login("standard_user", "secret_sauce");
+        loginPage.waitForInventoryPageToLoad();
 
         MenuComponent menu = inventoryPage.header().menu();
         menu.openMenu();

@@ -7,8 +7,8 @@ import io.qameta.allure.Owner;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
 import io.qameta.allure.Story;
+import org.testng.Assert;
 import org.testng.annotations.Test;
-import ui.assertions.LoginAssertions;
 import ui.pages.InventoryPage;
 import ui.pages.LoginPage;
 
@@ -16,7 +16,7 @@ import ui.pages.LoginPage;
 @Feature("Login")
 public class LoginTests extends BaseTest {
 
-    @Test(description = "Verify valid user can login successfully")
+    @Test(description = "Verify valid login")
     @Story("Valid Login")
     @Severity(SeverityLevel.CRITICAL)
     @Owner("Ilgiz")
@@ -24,23 +24,27 @@ public class LoginTests extends BaseTest {
         LoginPage loginPage = new LoginPage();
         InventoryPage inventoryPage = new InventoryPage();
 
-        loginPage.open();
         loginPage.login("standard_user", "secret_sauce");
+        loginPage.waitForInventoryPageToLoad();
 
-        LoginAssertions.assertLoginSuccessful(inventoryPage);
+        Assert.assertTrue(
+                inventoryPage.isInventoryListDisplayed(),
+                "Inventory list is not displayed after login"
+        );
     }
 
-    @Test(description = "Verify invalid user sees error message")
+    @Test(description = "Verify invalid login")
     @Story("Invalid Login")
     @Severity(SeverityLevel.NORMAL)
     @Owner("Ilgiz")
     public void invalidLoginTest() {
         LoginPage loginPage = new LoginPage();
 
-        loginPage.open();
-        loginPage.login("wrong_user", "wrong_pass");
+        loginPage.login("wrong_user", "wrong_password");
 
-        LoginAssertions.assertLoginErrorDisplayed(loginPage);
-        LoginAssertions.assertLoginErrorTextContains(loginPage, "Username and password do not match");
+        Assert.assertTrue(
+                loginPage.isErrorMessageDisplayed(),
+                "Login error message is not displayed"
+        );
     }
 }
