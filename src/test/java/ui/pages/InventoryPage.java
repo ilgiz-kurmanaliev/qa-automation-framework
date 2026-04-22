@@ -73,13 +73,7 @@ public class InventoryPage extends BasePage {
 
         clickElementSafely(backpackAddButton);
 
-        WaitUtils.getWait().until(driver -> {
-            try {
-                return isBackpackAdded();
-            } catch (Exception e) {
-                return false;
-            }
-        });
+        WaitUtils.getWait().until(ExpectedConditions.visibilityOfElementLocated(backpackRemoveButton));
     }
 
     public void removeFirstProductFromCart() {
@@ -91,13 +85,12 @@ public class InventoryPage extends BasePage {
 
         clickElementSafely(backpackRemoveButton);
 
-        WaitUtils.getWait().until(driver -> {
-            try {
-                return isBackpackRemoved();
-            } catch (Exception e) {
-                return false;
-            }
-        });
+        // Главное подтверждение удаления:
+        // кнопка Add to cart снова появилась
+        WaitUtils.getWait().until(ExpectedConditions.visibilityOfElementLocated(backpackAddButton));
+
+        // И кнопка Remove исчезла
+        WaitUtils.getWait().until(ExpectedConditions.invisibilityOfElementLocated(backpackRemoveButton));
     }
 
     public String getFirstProductButtonText() {
@@ -146,58 +139,59 @@ public class InventoryPage extends BasePage {
     }
 
     private void clickElementSafely(By locator) {
-        WebElement element = WaitUtils.getWait().until(
-                ExpectedConditions.presenceOfElementLocated(locator)
-        );
+        RuntimeException lastException = null;
 
-        ((JavascriptExecutor) driver).executeScript(
-                "arguments[0].scrollIntoView({block:'center'});",
-                element
-        );
+        for (int attempt = 1; attempt <= 3; attempt++) {
+            try {
+                WebElement element = WaitUtils.getWait().until(
+                        ExpectedConditions.presenceOfElementLocated(locator)
+                );
 
-        try {
-            WaitUtils.getWait().until(ExpectedConditions.elementToBeClickable(locator));
-            driver.findElement(locator).click();
-            return;
-        } catch (Exception ignored) {
+                ((JavascriptExecutor) driver).executeScript(
+                        "arguments[0].scrollIntoView({block:'center'});",
+                        element
+                );
+
+                try {
+                    WaitUtils.getWait().until(ExpectedConditions.elementToBeClickable(locator));
+                    driver.findElement(locator).click();
+                    return;
+                } catch (Exception ignored) {
+                }
+
+                try {
+                    element = driver.findElement(locator);
+                    new Actions(driver)
+                            .moveToElement(element)
+                            .pause(Duration.ofMillis(200))
+                            .click()
+                            .perform();
+                    return;
+                } catch (Exception ignored) {
+                }
+
+                element = driver.findElement(locator);
+                ((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
+                return;
+
+            } catch (Exception e) {
+                lastException = new RuntimeException(
+                        "Failed to click element " + locator + " on attempt " + attempt, e
+                );
+            }
         }
 
-        try {
-            element = driver.findElement(locator);
-            new Actions(driver)
-                    .moveToElement(element)
-                    .pause(Duration.ofMillis(200))
-                    .click()
-                    .perform();
-            return;
-        } catch (Exception ignored) {
-        }
-
-        element = driver.findElement(locator);
-        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
+        throw lastException;
     }
 
     private boolean isBackpackAdded() {
         try {
             boolean removeVisible = !driver.findElements(backpackRemoveButton).isEmpty();
-
             List<WebElement> badges = driver.findElements(cartBadge);
             boolean badgeVisible = !badges.isEmpty();
             boolean badgeIsOne = badgeVisible && "1".equals(badges.get(0).getText().trim());
 
             return removeVisible && badgeIsOne;
-        } catch (StaleElementReferenceException e) {
-            return false;
-        }
-    }
-
-    private boolean isBackpackRemoved() {
-        try {
-            boolean addVisible = !driver.findElements(backpackAddButton).isEmpty();
-            boolean removeGone = driver.findElements(backpackRemoveButton).isEmpty();
-            boolean badgeGone = driver.findElements(cartBadge).isEmpty();
-
-            return addVisible && removeGone && badgeGone;
         } catch (StaleElementReferenceException e) {
             return false;
         }
