@@ -14,11 +14,6 @@ public class BasePage {
 
     public BasePage() {
         this.driver = DriverFactory.getDriver();
-
-        if (this.driver == null) {
-            throw new RuntimeException("Driver is null in BasePage");
-        }
-
         PageFactory.initElements(driver, this);
     }
 

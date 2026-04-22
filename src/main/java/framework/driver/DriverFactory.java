@@ -1,36 +1,46 @@
 package framework.driver;
 
+import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
 public class DriverFactory {
 
-    private static final ThreadLocal<WebDriver> driverThreadLocal = new ThreadLocal<>();
-
     public static void initDriver() {
-        ChromeOptions options = new ChromeOptions();
+        WebDriver existingDriver = DriverManager.getDriver();
+        if (existingDriver != null) {
+            return;
+        }
 
-        options.addArguments("--headless=new");
+        WebDriverManager.chromedriver().setup();
+
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--remote-allow-origins=*");
+        options.addArguments("--disable-notifications");
+        options.addArguments("--disable-infobars");
+        options.addArguments("--disable-extensions");
         options.addArguments("--no-sandbox");
         options.addArguments("--disable-dev-shm-usage");
-        options.addArguments("--disable-gpu");
         options.addArguments("--window-size=1920,1080");
 
         WebDriver driver = new ChromeDriver(options);
-        driverThreadLocal.set(driver);
+        DriverManager.setDriver(driver);
     }
 
     public static WebDriver getDriver() {
-        return driverThreadLocal.get();
+        WebDriver driver = DriverManager.getDriver();
+        if (driver == null) {
+            throw new IllegalStateException("Driver is not initialized. Call DriverFactory.initDriver() first.");
+        }
+        return driver;
     }
 
     public static void quitDriver() {
-        WebDriver driver = driverThreadLocal.get();
-
+        WebDriver driver = DriverManager.getDriver();
         if (driver != null) {
             driver.quit();
-            driverThreadLocal.remove();
+            DriverManager.unload();
         }
     }
 }

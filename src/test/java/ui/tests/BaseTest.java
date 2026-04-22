@@ -4,7 +4,6 @@ import framework.driver.DriverFactory;
 import org.openqa.selenium.WebDriver;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
-import ui.pages.LoginPage;
 
 public abstract class BaseTest {
 
@@ -14,20 +13,12 @@ public abstract class BaseTest {
     public void setUp() {
         DriverFactory.initDriver();
         driver = DriverFactory.getDriver();
-
-        if (driver == null) {
-            throw new RuntimeException("Driver is not initialized");
-        }
-
         driver.get("https://www.saucedemo.com/");
-
-        LoginPage loginPage = new LoginPage();
-        loginPage.login("standard_user", "secret_sauce");
-        loginPage.waitForInventoryPageToLoad();
     }
 
     @AfterMethod(alwaysRun = true)
     public void tearDown() {
+        
         DriverFactory.quitDriver();
     }
 }

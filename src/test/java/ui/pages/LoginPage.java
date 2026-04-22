@@ -23,22 +23,10 @@ public class LoginPage extends BasePage {
         driver.get("https://www.saucedemo.com/");
     }
 
-    public void enterUsername(String username) {
-        type(usernameInput, username);
-    }
-
-    public void enterPassword(String password) {
-        type(passwordInput, password);
-    }
-
-    public void clickLoginButton() {
-        click(loginButton);
-    }
-
     public void login(String username, String password) {
-        enterUsername(username);
-        enterPassword(password);
-        clickLoginButton();
+        type(usernameInput, username);
+        type(passwordInput, password);
+        click(loginButton);
     }
 
     public void waitForInventoryPageToLoad() {
