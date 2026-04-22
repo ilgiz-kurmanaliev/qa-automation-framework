@@ -70,18 +70,14 @@ public class CheckoutPage extends BasePage {
     public CheckoutOverviewPage fillCheckoutFormAndContinue(String firstName, String lastName, String postalCode) {
         fillCheckoutForm(firstName, lastName, postalCode);
         clickContinue();
+        WaitUtils.getWait().until(ExpectedConditions.urlContains("checkout-step-two.html"));
         return new CheckoutOverviewPage();
     }
 
     public boolean isErrorMessageDisplayed() {
         try {
-            WaitUtils.getWait().until(ExpectedConditions.or(
-                    ExpectedConditions.visibilityOfElementLocated(errorMessageLocator),
-                    ExpectedConditions.urlContains("checkout-step-two.html")
-            ));
-
-            return !driver.findElements(errorMessageLocator).isEmpty()
-                    && driver.findElement(errorMessageLocator).isDisplayed();
+            WaitUtils.getWait().until(ExpectedConditions.visibilityOfElementLocated(errorMessageLocator));
+            return driver.findElement(errorMessageLocator).isDisplayed();
         } catch (Exception e) {
             return false;
         }

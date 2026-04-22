@@ -35,6 +35,8 @@ public class CheckoutOverviewPage extends BasePage {
             WebElement button = driver.findElement(By.id("finish"));
             ((JavascriptExecutor) driver).executeScript("arguments[0].click();", button);
         }
+
+        WaitUtils.getWait().until(ExpectedConditions.urlContains("checkout-complete.html"));
     }
 
     public boolean isOverviewPageDisplayed() {

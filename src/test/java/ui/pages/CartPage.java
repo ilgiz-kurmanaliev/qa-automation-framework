@@ -1,6 +1,8 @@
 package ui.pages;
 
 import framework.utils.WaitUtils;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -48,12 +50,12 @@ public class CartPage extends BasePage {
 
         try {
             click(checkoutButton);
-            WaitUtils.getWait().until(ExpectedConditions.urlContains("checkout-step-one.html"));
         } catch (Exception e) {
-            driver.get("https://www.saucedemo.com/checkout-step-one.html");
-            WaitUtils.getWait().until(ExpectedConditions.urlContains("checkout-step-one.html"));
+            WebElement button = driver.findElement(By.id("checkout"));
+            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", button);
         }
 
+        WaitUtils.getWait().until(ExpectedConditions.urlContains("checkout-step-one.html"));
         return new CheckoutPage();
     }
 }

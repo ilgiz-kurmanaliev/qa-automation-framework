@@ -2,6 +2,7 @@ package ui.pages;
 
 import framework.utils.WaitUtils;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -69,26 +70,15 @@ public class InventoryPage extends BasePage {
             return;
         }
 
-        RuntimeException lastException = null;
+        clickElementRobustly(backpackAddButton);
 
-        for (int attempt = 1; attempt <= 3; attempt++) {
+        WaitUtils.getWait().until(driver -> {
             try {
-                clickElementRobustly(backpackAddButton);
-
-                if (waitUntilBackpackAdded(12)) {
-                    return;
-                }
-
-                refreshInventoryPage();
+                return isBackpackAdded();
             } catch (Exception e) {
-                lastException = new RuntimeException(
-                        "Failed to add backpack on attempt " + attempt, e
-                );
-                refreshInventoryPage();
+                return false;
             }
-        }
-
-        throw new RuntimeException("Failed to add backpack product to cart after 3 attempts", lastException);
+        });
     }
 
     public void removeFirstProductFromCart() {
@@ -98,26 +88,15 @@ public class InventoryPage extends BasePage {
             addFirstProductToCart();
         }
 
-        RuntimeException lastException = null;
+        clickElementRobustly(backpackRemoveButton);
 
-        for (int attempt = 1; attempt <= 3; attempt++) {
+        WaitUtils.getWait().until(driver -> {
             try {
-                clickElementRobustly(backpackRemoveButton);
-
-                if (waitUntilBackpackRemoved(12)) {
-                    return;
-                }
-
-                refreshInventoryPage();
+                return isBackpackRemoved();
             } catch (Exception e) {
-                lastException = new RuntimeException(
-                        "Failed to remove backpack on attempt " + attempt, e
-                );
-                refreshInventoryPage();
+                return false;
             }
-        }
-
-        throw new RuntimeException("Failed to remove backpack product from cart after 3 attempts", lastException);
+        });
     }
 
     public String getFirstProductButtonText() {
@@ -179,7 +158,10 @@ public class InventoryPage extends BasePage {
                         ExpectedConditions.presenceOfElementLocated(locator)
                 );
 
-                scrollIntoView(element);
+                ((JavascriptExecutor) driver).executeScript(
+                        "arguments[0].scrollIntoView({block:'center'});",
+                        element
+                );
 
                 try {
                     WaitUtils.getWait().until(ExpectedConditions.elementToBeClickable(locator));
@@ -200,45 +182,17 @@ public class InventoryPage extends BasePage {
                 }
 
                 element = driver.findElement(locator);
-                scrollIntoView(element);
-                ((org.openqa.selenium.JavascriptExecutor) driver)
-                        .executeScript("arguments[0].click();", element);
+                ((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
                 return;
 
             } catch (Exception e) {
                 lastException = new RuntimeException(
-                        "Failed to click element " + locator + " on attempt " + attempt, e
+                        "Failed to click element: " + locator + " on attempt " + attempt, e
                 );
             }
         }
 
         throw lastException;
-    }
-
-    private boolean waitUntilBackpackAdded(int seconds) {
-        long endTime = System.currentTimeMillis() + (seconds * 1000L);
-
-        while (System.currentTimeMillis() < endTime) {
-            if (isBackpackAdded()) {
-                return true;
-            }
-            sleep(300);
-        }
-
-        return false;
-    }
-
-    private boolean waitUntilBackpackRemoved(int seconds) {
-        long endTime = System.currentTimeMillis() + (seconds * 1000L);
-
-        while (System.currentTimeMillis() < endTime) {
-            if (isBackpackRemoved()) {
-                return true;
-            }
-            sleep(300);
-        }
-
-        return false;
     }
 
     private boolean isBackpackAdded() {
@@ -263,20 +217,6 @@ public class InventoryPage extends BasePage {
             return addVisible && removeGone && badgeGone;
         } catch (StaleElementReferenceException e) {
             return false;
-        }
-    }
-
-    private void refreshInventoryPage() {
-        driver.get("https://www.saucedemo.com/inventory.html");
-        waitForPageToLoad();
-    }
-
-    private void sleep(long millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException("Sleep interrupted", e);
         }
     }
 }

@@ -5,15 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="60bfab3c-a0b5-47ea-aeff-c8adf2694e85" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/src/test/java/ui/tests/AdvancedLoginTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/ui/tests/AdvancedLoginTests.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/ui/tests/BaseTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/ui/tests/BaseTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/ui/tests/CartAdvancedTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/ui/tests/CartAdvancedTests.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/ui/tests/CartTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/ui/tests/CartTests.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/ui/tests/CheckoutTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/ui/tests/CheckoutTests.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/ui/tests/InventoryTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/ui/tests/InventoryTests.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/ui/tests/LoginTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/ui/tests/LoginTests.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/ui/tests/LogoutTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/ui/tests/LogoutTests.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/ui/tests/SortingTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/ui/tests/SortingTests.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/ui/pages/InventoryPage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/ui/pages/InventoryPage.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
